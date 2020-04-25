@@ -1,11 +1,143 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from 'axios'
+import { Route, Switch, Link } from 'react-router-dom'
+import Form from './Form'
+
+// Post url
+const url = 'https://reqres.in/api/users'
+
+// form values
+const initialFormValues = {
+  customer_name:'',
+  size:'',
+  sauce:'',
+  toppings:'',
+  instructions:''
+}
+
+const intialOrderList = {
+customer_name:'Startup-Test',
+size:'Extra-Large',
+sauce:'BBQ',
+toppings: [
+  'all meat'
+],
+instructions:'HitMVP'
+}
 
 const App = () => {
+  const [orderList, setOrderList] = useState([])
+  const [formValues, setFormValues] = useState(initialFormValues)
+
+  const getOrders = () => {
+    axios.get(url)
+    .then(res => {
+      console.log(res.data)
+      setOrderList(res.data)
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
+  useEffect(()=> {
+    getOrders()
+  }, [])
+
+  const postOrder = order => {
+    axios.post(url, order)
+    .then(res => {
+      console.log(res)
+      setOrderList([
+        ...orderList,
+        res.data
+      ])
+      .catch(err => {
+        console.log(err)
+      })
+    })
+  }
+
+  const onInputChange = evt => {
+    const name = evt.target.name
+    const value = evt.target.value
+
+    setFormValues({
+      ...formValues,
+      [name]: value
+    })
+  }
+
+  const onCheckboxChange = evt => {
+    const {name} = evt.target
+    const isChecked = evt.target.checked
+    setFormValues({
+      ...formValues,
+      toppings: {
+        ...formValues.toppings,
+        [name]: isChecked
+      }
+    })
+  }
+
+  const onRadioChange = evt => {
+    const {name} = evt.target
+    const value = evt.target.value
+    setFormValues({
+      ...formValues,
+      sauce: {
+        ...formValues.sauce,
+        [name]: value
+      }
+    })
+  }
+
+  const onSubmit = evt => {
+    evt.preventDefault()
+    const newOrder = {
+      customer_name : formValues.customer_name,
+      size: formValues.size,
+      sauce: Object.keys(formValues.sauce),
+      toppings: Object.keys(formValues.toppings)
+        .filter(topping => formValues.toppings[topping] === true)
+    }
+    postOrder(newOrder)
+    setFormValues(initialFormValues)
+  }
+  
+
   return (
-    <>
-      <h1>Lambda Eats</h1>
-      <p>You can remove this code and create your own header</p>
-    </>
+    <div>
+      {/* <Header > will put the below inside a header onject since it doesnt change in the wireframe*/}
+        <div className={'header container'}>
+          <h1>Lambda Eats</h1>
+          <div className={'header-buttons'}>
+            <Link to='/'><button id={'home-button'}>Home</button></Link>
+            <button id={'help-button'}>Help</button>
+          </div>
+        </div>
+      {/* </Header> */}
+      <Switch>
+        <Route path='/Pizza'>
+          <Form
+          values={formValues}
+          onInputChange={onInputChange}
+          onCheckboxChange={onCheckboxChange}
+          onRadioChange={onRadioChange}
+          onSubmit={onSubmit}
+          />
+          
+        </Route>
+        <Route path='/'>
+          
+
+            <div className={'hero-image container'}>
+              <img src={'./image/Pizza.jpg'}/>
+              <div className={"centered"}>Your favorite food, delivered while coding</div>
+              <Link to='/Pizza'><button>Click!</button></Link> {/* this button will lead to the form */}
+            </div>
+        </Route>
+      </Switch>
+    </div>
   );
 };
 export default App;
