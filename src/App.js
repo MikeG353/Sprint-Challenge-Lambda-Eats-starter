@@ -1,7 +1,12 @@
-import React, { useState } from "react";
-import { Route, Switch, Router, Link } from 'react-router-dom'
+import React, { useState, useEffect } from "react";
+import axios from 'axios'
+import { Route, Switch, Link } from 'react-router-dom'
 import Form from './Form'
 
+// Post url
+const url = 'https://reqres.in/api/users'
+
+// form values
 const initialFormValues = {
   customer_name:'',
   size:'',
@@ -10,9 +15,47 @@ const initialFormValues = {
   instructions:''
 }
 
+const intialOrderList = {
+customer_name:'Startup-Test',
+size:'Extra-Large',
+sauce:'BBQ',
+toppings: [
+  'all meat'
+],
+instructions:'HitMVP'
+}
+
 const App = () => {
   const [orderList, setOrderList] = useState([])
   const [formValues, setFormValues] = useState(initialFormValues)
+
+  const getOrders = () => {
+    axios.get(url)
+    .then(res => {
+      console.log(res.data)
+      setOrderList(res.data)
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
+  useEffect(()=> {
+    getOrders()
+  }, [])
+
+  const postOrder = order => {
+    axios.post(url, order)
+    .then(res => {
+      console.log(res)
+      setOrderList([
+        ...orderList,
+        res.data
+      ])
+      .catch(err => {
+        console.log(err)
+      })
+    })
+  }
 
   const onInputChange = evt => {
     const name = evt.target.name
@@ -26,7 +69,7 @@ const App = () => {
 
   const onCheckboxChange = evt => {
     const {name} = evt.target
-    const isChecked =evt.target.isChecked
+    const isChecked = evt.target.checked
     setFormValues({
       ...formValues,
       toppings: {
@@ -36,18 +79,31 @@ const App = () => {
     })
   }
 
+  const onRadioChange = evt => {
+    const {name} = evt.target
+    const value = evt.target.value
+    setFormValues({
+      ...formValues,
+      sauce: {
+        ...formValues.sauce,
+        [name]: value
+      }
+    })
+  }
+
   const onSubmit = evt => {
     evt.preventDefault()
     const newOrder = {
       customer_name : formValues.customer_name,
       size: formValues.size,
-      sauce: formValues.sauce,
+      sauce: Object.keys(formValues.sauce),
       toppings: Object.keys(formValues.toppings)
         .filter(topping => formValues.toppings[topping] === true)
     }
-    setOrderList([...orderList, newOrder])
+    postOrder(newOrder)
     setFormValues(initialFormValues)
   }
+  
 
   return (
     <div>
@@ -66,6 +122,7 @@ const App = () => {
           values={formValues}
           onInputChange={onInputChange}
           onCheckboxChange={onCheckboxChange}
+          onRadioChange={onRadioChange}
           onSubmit={onSubmit}
           />
           

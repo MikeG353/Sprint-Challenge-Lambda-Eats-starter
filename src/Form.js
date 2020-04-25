@@ -5,6 +5,7 @@ export default function Form(props) {
         values,
         onInputChange,
         onCheckboxChange,
+        onRadioChange,
         onSubmit
     } = props
 
@@ -15,14 +16,16 @@ export default function Form(props) {
             </div>
             <h2>Build Your Own Pizza</h2>
             <img src='./image/Pizza'></img>
-            <label>Name:&nbsp;
+            <h2>Name:</h2>
+            <label>
                 <input
                     value={values.customer_name}
                     onChange={onInputChange}
                     name='customer_name'
                     type='text'/>
             </label>
-            <label>Choice of Size:&nbsp;
+            <h2>Choice of Size:</h2>
+            <label>
                 <select 
                     value={values.size}
                     onChange={onInputChange}
@@ -35,57 +38,70 @@ export default function Form(props) {
                     <option value='Large'>Large</option>
                 </select>
             </label>
-            <label>Coice of Sauce:&nbsp;
+            <h2>Coice of Sauce:</h2>
+            <div>
                 <input
                 type='radio'
-                name='original'
+                id='original_red'
+                name='sauce'
                 value='original'
-                checked={true}
-                />Original Red
-                <input
-                type='radio'
-                name='garlic_ranch'
-                value='garlic_ranch'
-                />Garlic Ranch
-                <input
-                type='radio'
-                name='bbq'
-                value='bbq'
-                />BBQ Sauce
-                 <input
-                type='radio'
-                name='alfredo'
-                value='alfredo'
-                />Alfredo
+                onChange={onRadioChange}
+                checked/>
+                <label>Original Red</label>
 
-            </label>
-            <label>Choice of Toppings&nbsp;
                 <input
-                checked={values.pepperoni}
+                type='radio'
+                id='garlic_ranch'
+                name='sauce'
+                value='garlic_ranch'
+                onChange={onRadioChange}
+                /><label>Garlic Ranch</label>
+
+                <input
+                type='radio'
+                id='sauceChoice3'
+                name='sauce'
+                value='bbq'
+                onChange={onRadioChange}
+                /><label>BBQ Sauce</label>
+
+                <input
+                type='radio'
+                id='sauceChoice4'
+                name='sauce'
+                value='alfredo'
+                onChange={onRadioChange}
+                /><lable>Spinich Alfredo</lable>
+            </div>
+            <h2>Choice of Toppings:</h2>
+                <lable><input
+                checked={values.toppings.pepperoni}
                 onChange={onCheckboxChange}
                 name='pepperoni'
-                type='checkbox'/>Pepperonni
+                type='checkbox'
+                />
+                Pepperonni</lable>
 
-                <input
-                checked={values.sausage}
+                <lable><input
+                checked={values.toppings.sausage}
                 onChange={onCheckboxChange}
                 name='sausage'
-                type='checkbox'/>Sausage
+                type='checkbox'/>Sausage</lable>
 
-                <input
-                checked={values.canadian_bacon}
+                <lable><input
+                checked={values.toppings.canadian_bacon}
                 onChange={onCheckboxChange}
                 name='canadian_bacon'
-                type='checkbox'/>Canadian Bacon
+                type='checkbox'/>Canadian Bacon</lable>
 
-                <input
-                checked={values.bacon}
+                <lable><input
+                checked={values.toppings.bacon}
                 onChange={onCheckboxChange}
                 name='bacon'
-                type='checkbox'/>Bacon
+                type='checkbox'/>Bacon</lable>
 
-            </label>
-            <label>Special Delivery Instructions
+            <h2>Special Delivery Instructions:</h2>
+            <label>
                 <input
                     value={values.instructions}
                     onChange={onInputChange}
